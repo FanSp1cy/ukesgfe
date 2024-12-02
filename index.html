@@ -43,6 +43,8 @@
             font-size: 20px;
             animation: fall linear infinite;
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         @keyframes fall {
@@ -129,6 +131,7 @@
             font-size: 15px;
             text-shadow: 0 0 5px var(--glow-color);
             box-shadow: 0 0 10px var(--glow-spread-color);
+            will-change: transform;
         }
 
         .btn:before {
@@ -180,20 +183,41 @@
             .btn {
                 height: 50px;
                 font-size: 14px;
-            }
-
-            .btn:before {
-                display: none;
-            }
-
-            .btn {
+                transition: transform 0.2s;
                 box-shadow: 0 0 5px var(--glow-spread-color);
                 backdrop-filter: none;
+            }
+
+            .btn:before, .btn:after {
+                display: none;
             }
 
             .btn:hover {
                 transform: none;
                 box-shadow: 0 0 8px var(--glow-spread-color);
+            }
+
+            .crypto-rain {
+                display: none;
+            }
+
+            .modal {
+                backdrop-filter: none;
+                background: rgba(13, 42, 65, 0.98);
+            }
+
+            .toast {
+                animation: none;
+                transition: opacity 0.3s;
+            }
+
+            .toast.hide {
+                opacity: 0;
+            }
+
+            .spinner {
+                animation: spin 1s linear infinite;
+                border-width: 2px;
             }
         }
 
@@ -237,6 +261,7 @@
             width: 90%;
             max-width: 400px;
             box-shadow: 0 0 20px var(--glow-spread-color);
+            will-change: opacity;
         }
 
         .modal-header {
@@ -490,9 +515,9 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease-out forwards;
-            position: relative;
-            overflow: hidden;
+            animation: none;
+            transition: opacity 0.3s;
+            will-change: opacity, transform;
         }
 
         .toast::before {
@@ -503,11 +528,11 @@
             width: 100%;
             height: 3px;
             background: var(--glow-color);
-            animation: progress 3s linear forwards;
+            animation: none;
         }
 
         .toast.removing {
-            animation: slideOut 0.3s ease-in forwards;
+            opacity: 0;
         }
 
         @keyframes progress {
@@ -542,7 +567,8 @@
             height: 20px;
             border: 2px solid transparent;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
+            border-width: 2px;
         }
 
         @keyframes spin {
@@ -552,39 +578,52 @@
     </style>
     <script>
         function createCryptoRain() {
-            const symbols = ['₿', 'Ξ', '◈', '∯', '₮', '∰', '⟠', '∭', '₳', '∲'];
-            const rain = document.getElementById('cryptoRain');
+            const cryptoRain = document.getElementById('cryptoRain');
+            const isMobile = window.innerWidth <= 768;
+            
+            // Disable on mobile
+            if (isMobile) {
+                cryptoRain.style.display = 'none';
+                return;
+            }
+
+            const symbols = ['₿', '€', '$', '¥', '£', '₽', '₹'];
+            const maxSymbols = Math.min(50, Math.floor(window.innerWidth / 20));
             
             function createSymbol() {
                 const symbol = document.createElement('div');
                 symbol.className = 'crypto-symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
                 symbol.style.left = Math.random() * 100 + 'vw';
                 symbol.style.animationDuration = Math.random() * 3 + 2 + 's';
-                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                rain.appendChild(symbol);
+                symbol.style.opacity = Math.random() * 0.5 + 0.1;
+                cryptoRain.appendChild(symbol);
                 
-                setTimeout(() => {
-                    rain.removeChild(symbol);
-                }, 5000);
+                // Remove symbol after animation
+                symbol.addEventListener('animationend', () => {
+                    cryptoRain.removeChild(symbol);
+                });
             }
             
-            setInterval(createSymbol, 200);
+            // Reduce symbol creation rate
+            const interval = setInterval(() => {
+                if (cryptoRain.childNodes.length < maxSymbols) {
+                    createSymbol();
+                }
+            }, 200);
         }
         
         function showToast(message, btnId) {
             const toast = document.createElement('div');
             toast.className = 'toast';
             
-            // Get the button's glow color
             const btnStyle = getComputedStyle(document.getElementById(btnId));
             const glowColor = btnStyle.getPropertyValue('--glow-color');
             
-            // Create spinner
             const spinner = document.createElement('div');
             spinner.className = 'spinner';
             spinner.style.borderColor = glowColor + ' transparent transparent transparent';
             
-            // Create message container for better line breaks
             const messageDiv = document.createElement('div');
             messageDiv.style.marginLeft = '10px';
             messageDiv.style.whiteSpace = 'pre-line';
@@ -593,18 +632,22 @@
             toast.appendChild(spinner);
             toast.appendChild(messageDiv);
             
-            // Style the toast
-            toast.style.backgroundColor = 'rgba(13, 42, 65, 0.95)';
+            toast.style.backgroundColor = 'rgba(13, 42, 65, 0.98)';
             toast.style.borderColor = glowColor;
             toast.style.color = glowColor;
             
-            document.getElementById('toastContainer').appendChild(toast);
+            const container = document.getElementById('toastContainer');
+            
+            // Limit number of toasts
+            while (container.childNodes.length >= 3) {
+                container.removeChild(container.firstChild);
+            }
+            
+            container.appendChild(toast);
             
             setTimeout(() => {
                 toast.classList.add('hide');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
+                setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
         
@@ -673,6 +716,15 @@
         };
         
         createCryptoRain();
+        
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const cryptoRain = document.getElementById('cryptoRain');
+                cryptoRain.style.display = window.innerWidth <= 768 ? 'none' : 'block';
+            }, 250);
+        });
     </script>
 </body>
 </html>
