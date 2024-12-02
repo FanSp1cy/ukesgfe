@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Trading Robots</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0a0a2e, #16213e, #1f1f3a, #0f0f1a);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crypto-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .crypto-symbol {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .background-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(76, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+            animation: moveBackground 4s linear infinite;
+            opacity: 0.5;
+        }
+
+        .container {
+            z-index: 2;
+            text-align: center;
+            padding: 1rem;
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 2rem;
+            color: rgb(217, 176, 255);
+            text-shadow: 0 0 10px rgba(217, 176, 255, 0.8),
+                         0 0 20px rgba(217, 176, 255, 0.5),
+                         0 0 30px rgba(217, 176, 255, 0.3);
+            font-weight: 600;
+            letter-spacing: 3px;
+            animation: titleGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .btn {
+            --glow-color: #00eeff;
+            --glow-spread-color: rgba(0, 238, 255, 0.4);
+            --btn-color: rgba(13, 42, 65, 0.4);
+            border-radius: 8px;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0px 15px;
+            border: 1px solid var(--glow-color);
+            color: var(--glow-color);
+            position: relative;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            background-color: var(--btn-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 15px;
+            text-shadow: 0 0 5px var(--glow-color);
+            box-shadow: 0 0 10px var(--glow-spread-color);
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: -2px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, 
+                var(--glow-color), var(--glow-spread-color));
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-spread-color);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        #btn1 { --glow-color: #00eeff; --glow-spread-color: rgba(0, 238, 255, 0.4); }
+        #btn2 { --glow-color: #00ff88; --glow-spread-color: rgba(0, 255, 136, 0.4); }
+        #btn3 { --glow-color: #ff00ff; --glow-spread-color: rgba(255, 0, 255, 0.4); }
+        #btn4 { --glow-color: #ffaa00; --glow-spread-color: rgba(255, 170, 0, 0.4); }
+        #btn5 { --glow-color: #00ffff; --glow-spread-color: rgba(0, 255, 255, 0.4); }
+        #btn6 { --glow-color: #ff0088; --glow-spread-color: rgba(255, 0, 136, 0.4); }
+        #btn7 { --glow-color: #ffff00; --glow-spread-color: rgba(255, 255, 0, 0.4); }
+        #btn8 { --glow-color: #00ffcc; --glow-spread-color: rgba(0, 255, 204, 0.4); }
+        #btn9 { --glow-color: #ff3366; --glow-spread-color: rgba(255, 51, 102, 0.4); }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .buttons-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 10px;
+            }
+
+            .btn {
+                height: 50px;
+                font-size: 14px;
+            }
+
+            .btn:before {
+                display: none;
+            }
+
+            .btn {
+                box-shadow: 0 0 5px var(--glow-spread-color);
+                backdrop-filter: none;
+            }
+
+            .btn:hover {
+                transform: none;
+                box-shadow: 0 0 8px var(--glow-spread-color);
+            }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 10px rgba(217, 176, 255, 0.8),
+                            0 0 20px rgba(217, 176, 255, 0.5),
+                            0 0 30px rgba(217, 176, 255, 0.3);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(217, 176, 255, 0.8),
+                            0 0 30px rgba(217, 176, 255, 0.5),
+                            0 0 40px rgba(217, 176, 255, 0.3);
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(13, 42, 65, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glow-color);
+            border-radius: 12px;
+            padding: 25px;
+            z-index: 1001;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px var(--glow-spread-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glow-spread-color);
+        }
+
+        .modal-title {
+            color: var(--glow-color);
+            margin: 0;
+            font-size: 1.2em;
+            text-transform: uppercase;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--glow-color);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            color: var(--glow-color);
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .input-group input[type="number"] {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glow-spread-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 1em;
+        }
+
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .switch-label {
+            color: var(--glow-color);
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 0, 0, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid rgba(255, 0, 0, 0.4);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ff3333;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        input:checked + .slider {
+            background-color: rgba(0, 255, 0, 0.2);
+            border-color: rgba(0, 255, 0, 0.4);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .timeframe-select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glow-spread-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            width: 100%;
+            font-size: 1em;
+        }
+
+        .timeframe-select option {
+            background: rgba(13, 42, 65, 0.95);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="crypto-rain" id="cryptoRain"></div>
+    <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"></div>
+    <div class="modal-overlay" id="modalOverlay"></div>
+    
+    <!-- Quotex Modal -->
+    <div class="modal" id="quotexModal">
+        <div class="modal-header">
+            <h3 class="modal-title">Quotex Trading Settings</h3>
+            <button class="close-btn" onclick="closeModal('quotexModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group">
+                <label>Trade Amount</label>
+                <input type="number" min="1" step="1" placeholder="Enter amount" id="quotexAmount">
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Enable Trade on OTC</span>
+                <label class="switch">
+                    <input type="checkbox" id="quotexOTC">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="input-group">
+                <label>Trading Frame</label>
+                <select class="timeframe-select" id="quotexTimeframe">
+                    <option value="1M">1 Minute</option>
+                    <option value="5M">5 Minutes</option>
+                    <option value="10M">10 Minutes</option>
+                    <option value="15M">15 Minutes</option>
+                    <option value="30M">30 Minutes</option>
+                    <option value="1H">1 Hour</option>
+                </select>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Start Trading</span>
+                <label class="switch">
+                    <input type="checkbox" id="quotexStart">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pocket Modal -->
+    <div class="modal" id="pocketModal">
+        <div class="modal-header">
+            <h3 class="modal-title">Pocket Trading Settings</h3>
+            <button class="close-btn" onclick="closeModal('pocketModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group">
+                <label>Trade Amount</label>
+                <input type="number" min="1" step="1" placeholder="Enter amount" id="pocketAmount">
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Enable Trade on OTC</span>
+                <label class="switch">
+                    <input type="checkbox" id="pocketOTC">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="input-group">
+                <label>Trading Frame</label>
+                <select class="timeframe-select" id="pocketTimeframe">
+                    <option value="1M">1 Minute</option>
+                    <option value="5M">5 Minutes</option>
+                    <option value="10M">10 Minutes</option>
+                    <option value="15M">15 Minutes</option>
+                    <option value="30M">30 Minutes</option>
+                    <option value="1H">1 Hour</option>
+                </select>
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">Start Trading</span>
+                <label class="switch">
+                    <input type="checkbox" id="pocketStart">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Trading Robots</h1>
+        <div class="buttons-container">
+            <button class="btn" id="btn1" onclick="showModal('quotexModal')">Start Quotex Robot</button>
+            <button class="btn" id="btn2" onclick="showModal('pocketModal')">Start Pocket Robot</button>
+            <button class="btn" id="btn3" onclick="showToast('Launching Expert Option Robot...', 'btn3')">Start Expert Option Robot</button>
+            <button class="btn" id="btn4" onclick="showToast('Starting IQ Option Robot...', 'btn4')">Start IQ Option Robot</button>
+            <button class="btn" id="btn5" onclick="showToast('Initializing Binomo Robot...', 'btn5')">Start Binomo Robot</button>
+            <button class="btn" id="btn6" onclick="showToast('Starting Olymp Robot...', 'btn6')">Start Olymp Robot</button>
+            <button class="btn" id="btn7" onclick="showToast('Launching MetaTrader 4...', 'btn7')">Start MetaTrader 4 Robot</button>
+            <button class="btn" id="btn8" onclick="showToast('Starting MetaTrader 5...', 'btn8')">Start MetaTrader 5 Robot</button>
+            <button class="btn" id="btn9" onclick="showToast('Initializing Binance Bot...', 'btn9')">Start Binance Bot</button>
+        </div>
+    </div>
+    <style>
+        .toast {
+            padding: 16px 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            margin: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--glow-color);
+            animation: progress 3s linear forwards;
+        }
+
+        .toast.removing {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        function createCryptoRain() {
+            const symbols = ['₿', 'Ξ', '◈', '∯', '₮', '∰', '⟠', '∭', '₳', '∲'];
+            const rain = document.getElementById('cryptoRain');
+            
+            function createSymbol() {
+                const symbol = document.createElement('div');
+                symbol.className = 'crypto-symbol';
+                symbol.style.left = Math.random() * 100 + 'vw';
+                symbol.style.animationDuration = Math.random() * 3 + 2 + 's';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                rain.appendChild(symbol);
+                
+                setTimeout(() => {
+                    rain.removeChild(symbol);
+                }, 5000);
+            }
+            
+            setInterval(createSymbol, 200);
+        }
+        
+        function showToast(message, btnId) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            // Get the button's glow color
+            const btnStyle = getComputedStyle(document.getElementById(btnId));
+            const glowColor = btnStyle.getPropertyValue('--glow-color');
+            
+            // Create spinner
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            spinner.style.borderColor = glowColor + ' transparent transparent transparent';
+            
+            // Create message container for better line breaks
+            const messageDiv = document.createElement('div');
+            messageDiv.style.marginLeft = '10px';
+            messageDiv.style.whiteSpace = 'pre-line';
+            messageDiv.textContent = message;
+            
+            toast.appendChild(spinner);
+            toast.appendChild(messageDiv);
+            
+            // Style the toast
+            toast.style.backgroundColor = 'rgba(13, 42, 65, 0.95)';
+            toast.style.borderColor = glowColor;
+            toast.style.color = glowColor;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Handle trading start/stop
+        document.getElementById('quotexStart').addEventListener('change', function() {
+            const amount = document.getElementById('quotexAmount').value;
+            const timeframe = document.getElementById('quotexTimeframe').value;
+            const otc = document.getElementById('quotexOTC').checked;
+            
+            if (this.checked) {
+                if (!amount) {
+                    showToast('Please enter trade amount', 'btn1');
+                    this.checked = false;
+                    return;
+                }
+                showToast(`Starting Quotex Robot...\nAmount: $${amount}\nTimeframe: ${timeframe}\nOTC: ${otc ? 'Enabled' : 'Disabled'}`, 'btn1');
+            } else {
+                showToast('Stopping Quotex Robot...', 'btn1');
+            }
+        });
+
+        document.getElementById('pocketStart').addEventListener('change', function() {
+            const amount = document.getElementById('pocketAmount').value;
+            const timeframe = document.getElementById('pocketTimeframe').value;
+            const otc = document.getElementById('pocketOTC').checked;
+            
+            if (this.checked) {
+                if (!amount) {
+                    showToast('Please enter trade amount', 'btn2');
+                    this.checked = false;
+                    return;
+                }
+                showToast(`Starting Pocket Robot...\nAmount: $${amount}\nTimeframe: ${timeframe}\nOTC: ${otc ? 'Enabled' : 'Disabled'}`, 'btn2');
+            } else {
+                showToast('Stopping Pocket Robot...', 'btn2');
+            }
+        });
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        // Update button click handlers
+        document.getElementById('btn1').onclick = function() {
+            showModal('quotexModal');
+        };
+
+        document.getElementById('btn2').onclick = function() {
+            showModal('pocketModal');
+        };
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('modalOverlay')) {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.getElementById('modalOverlay').style.display = 'none';
+            }
+        };
+        
+        createCryptoRain();
+    </script>
+</body>
+</html>
